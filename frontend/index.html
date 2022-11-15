@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Gomodoro</title>
+</head>
+
+<body>
+    <div id="app">
+        <main>
+            <progress id="js-progress" value="0"></progress>
+            <div class="progress-bar"></div>
+            <div class="timer">
+                <div class="button-group mode-buttons" id="js-mode-buttons">
+                    <button data-mode="pomodoro" class="button active mode-button" id="js-pomodoro">
+                        Gomodoro
+                    </button>
+                    <button data-mode="shortBreak" class="button active mode-button" id="js-short-break">
+                        Short Break
+                    </button>
+                    <button data-mode="longBreak" class="button active mode-button" id="js-long-break">
+                        Long Break
+                    </button>
+                </div>
+            </div>
+            <div class="clock" id="js-clock">
+                <span id="js-minutes">25</span>
+                <span class="seperator">:</span>
+                <span id="js-seconds">00</span>
+            </div>
+            <button class="main-button" data-action="start" id="js-btn">Start</button>
+        </main>
+    </div>
+    <div class="hidden">
+        <audio src="./src/assets/sounds/backtowork.mp3" data-sound="pomodoro"></audio>
+        <audio src="./src/assets/sounds/break.mp3" data-sound="shortBreak"></audio>
+        <audio src="./src/assets/sounds/break.mp3" data-sound="longBreak"></audio>
+    </div>
+    <script src="./src/main.js" type="module"></script>
+</body>
+
+</html>

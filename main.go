@@ -1,70 +1,36 @@
 package main
 
 import (
-	"fmt"
-	"os"
-	"strconv"
-	"time"
+	"embed"
 
-	"fyne.io/fyne/v2/app"
-	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/widget"
+	"github.com/wailsapp/wails/v2"
+	"github.com/wailsapp/wails/v2/pkg/options"
+	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
 )
 
-const defaultWorkDurationInMins = 1
-const defaultRestDurationInMins = 1
+//go:embed all:frontend/dist
+var assets embed.FS
 
 func main() {
-	a := app.New()
-	win := a.NewWindow("Gomodoro")
-	clock := widget.NewLabel("")
+	// Create an instance of the app structure
+	app := NewApp()
 
-	workDurationInMins := defaultWorkDurationInMins
-	restDurationInMins := defaultRestDurationInMins
-	if len(os.Args) != 3 {
-		fmt.Println("No number of arguments, using default values of 25 minutes working and 5 minutes resting")
+	// Create application with options
+	err := wails.Run(&options.App{
+		Title:  "Gomodoro",
+		Width:  1024,
+		Height: 768,
+		AssetServer: &assetserver.Options{
+			Assets: assets,
+		},
+		BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 1},
+		OnStartup:        app.startup,
+		Bind: []interface{}{
+			app,
+		},
+	})
+
+	if err != nil {
+		println("Error:", err.Error())
 	}
-	if len(os.Args) == 3 {
-		workdur, err1 := strconv.Atoi(os.Args[1])
-		restdur, err2 := strconv.Atoi(os.Args[2])
-		workDurationInMins = workdur
-		restDurationInMins = restdur
-		if err1 != nil || err2 != nil {
-			fmt.Println("Problem setting interval values, using default values of 25minutes working and 5minutes resting")
-		}
-	}
-
-	var timerInstance timer
-	resumeBtn := widget.NewButton("Start", nil)
-
-	resumeBtn.OnTapped = func() {
-		//check if timer is not yet running
-		if timerInstance == (timer{}) {
-			timerInstance = timer{
-				start:        time.Now(),
-				running:      true,
-				inWorkMode:   true,
-				workDuration: workDurationInMins * 60,
-				restDuration: restDurationInMins * 60,
-			}
-
-			go timerInstance.updateTime(clock)
-
-			// change btn name
-			resumeBtn.Text = "Pause"
-
-			//timer is already running
-		} else {
-			if timerInstance.running {
-				resumeBtn.Text = "Pause"
-				timerInstance.pause()
-			} else {
-				resumeBtn.Text = "Resume"
-				timerInstance.resume()
-			}
-		}
-	}
-
-	win.SetContent(container.NewVBox(clock, resumeBtn))
-	win.ShowAndRun()
 }
