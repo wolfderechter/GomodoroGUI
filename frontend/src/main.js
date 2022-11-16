@@ -1,46 +1,6 @@
 import './style.css';
 import './app.css';
 
-import logo from './assets/images/logo-universal.png';
-import { Greet } from '../wailsjs/go/main/App';
-
-// document.querySelector('#app').innerHTML = `
-//     <img id="logo" class="logo">
-//       <div class="result" id="result">Please enter your name below 👇</div>
-//       <div class="input-box" id="input">
-//         <input class="input" id="name" type="text" autocomplete="off" />
-//         <button class="btn" onclick="greet()">Greet</button>
-//       </div>
-//     </div>
-// `;
-// document.getElementById('logo').src = logo;
-
-// let nameElement = document.getElementById("name");
-// nameElement.focus();
-// let resultElement = document.getElementById("result");
-
-// Setup the greet function
-// window.greet = function () {
-//     // Get name
-//     let name = nameElement.value;
-
-//     // Check if the input is empty
-//     if (name === "") return;
-
-//     // Call App.Greet(name)
-//     try {
-//         Greet(name)
-//             .then((result) => {
-//                 // Update result with data back from App.Greet()
-//                 resultElement.innerText = result;
-//             })
-//             .catch((err) => {
-//                 console.error(err);
-//             });
-//     } catch (err) {
-//         console.error(err);
-//     }
-// };
 
 // JS for the timer functionality
 const timer = {
@@ -49,7 +9,8 @@ const timer = {
     shortBreak: 5,
     longBreak: 15,
     // A long break (15 minutes) is activated after four consecutive pomodoro sessions
-    longBreakInterval: 4
+    longBreakInterval: 4,
+    sessions: 0,
 }
 
 // The 3 buttons: gomodoro, shortbreak, longbreak
@@ -94,5 +55,100 @@ function handleMode(event) {
     if (!mode) return;
 
     switchMode(mode);
+    // make sure the timer is stopped when selecting a different mode
+    stopTimer();
 }
 
+let interval;
+
+function getRemainingTime(endTime) {
+    // get the current time stamp and calculate the diference with the endTime
+    const currentTime = Date.parse(new Date());
+    const difference = endTime - currentTime;
+
+    // This difference gets parsed into the total number of seconds left in total
+    // For example total=230s => minutes=3m and seconds=50s
+    const total = Number.parseInt(difference / 1000, 10);
+    // Minutes left, if any
+    const minutes = Number.parseInt((total / 60) % 60, 10);
+    // Seconds left, if any
+    const seconds = Number.parseInt((total % 60), 10);
+
+    return {
+        total,
+        minutes,
+        seconds,
+    };
+}
+
+function startTimer() {
+    // Before we can start the timer we need to get the exact time in the future when the timer will end
+    // We do this by getting the timestamp of the current moment with 'Date.parse(new Date()) in ms, so we convert it to seconds with * 1000
+    let { total } = timer.remainingTime;
+    const endTime = Date.parse(new Date()) + total * 1000;
+
+    // When starting a new pomodoro, the amount of sessions is incremented by 1
+    if (timer.mode === 'pomodoro') timer.sessions++;
+
+    // Change the button text to stop
+    mainButton.dataset.action = 'stop';
+    mainButton.textContent = 'stop';
+    mainButton.classList.add('active');
+
+    // The inteerval variable is set to the setInterval method that will execute it's callback function every second
+    interval = setInterval(function () {
+        timer.remainingTime = getRemainingTime(endTime);
+        updateClock();
+
+        total = timer.remainingTime.total;
+        // If total <= 0 this means the current mode is finished
+        if (total <= 0) {
+            clearInterval(interval);
+
+            // This auto switches to the next mode that should be done following the pomodoro rules
+            switch (timer.mode) {
+                case 'pomodoro':
+                    // Whenever we completed 4 pomodoro sessions we get a long break
+                    if (timer.sessions % timer.longBreakInterval === 0) {
+                        switchMode('longBreak');
+                    } else {
+                        switchMode('shortBreak');
+                    }
+                    break;
+                default:
+                    switchMode('pomodoro');
+            }
+
+            // Uncommenting this would auto start the next sessions timer, but I prefer manually starting it
+            // startTimer();
+        }
+    }, 1000);
+}
+
+function stopTimer() {
+    // clearInterval stops the running setInterval function running that was started in the startTimer function
+    clearInterval(interval);
+
+    // Reset the button text to start
+    mainButton.dataset.action = 'start';
+    mainButton.textContent = 'start';
+    mainButton.classList.remove('active');
+}
+
+// Call the startTimer function once the start button is clicked
+const mainButton = document.getElementById('js-btn');
+mainButton.addEventListener('click', () => {
+    // extract the current action of the button clicked, can be start or stop
+    const { action } = mainButton.dataset;
+
+    if (action === 'start') {
+        startTimer();
+    } else if (action === 'stop') {
+        stopTimer();
+    }
+});
+
+// On page load, set the default mode to pomodoro
+document.addEventListener('DOMContentLoaded', () => {
+    switchMode('pomodoro')
+})
