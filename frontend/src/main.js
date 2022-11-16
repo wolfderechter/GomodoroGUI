@@ -1,7 +1,7 @@
 import './style.css';
 import './app.css';
 
-
+import { WindowSetTitle } from '../wailsjs/runtime/runtime';
 // JS for the timer functionality
 const timer = {
     // A traditional pomodoro session is 25 minutes
@@ -28,6 +28,16 @@ function updateClock() {
     const sec = document.getElementById('js-seconds');
     min.textContent = minutes;
     sec.textContent = seconds;
+
+    // Reflect the countdown in the title for browsers
+    const text = timer.mode === 'pomodoro' ? 'Get back to work!' : 'Take a break!';
+    document.title = `${minutes}:${seconds} — ${text}`;
+    WindowSetTitle(`${minutes}:${seconds} — ${text}`);
+
+    const progress = document.getElementById('js-progress');
+    // Calculate the current position in progress by calculating the theoretical total minus the remainingtime total
+    // Setting this value will show the progress on screen
+    progress.value = timer[timer.mode] * 60 - timer.remainingTime.total;
 }
 
 function switchMode(mode) {
@@ -44,6 +54,9 @@ function switchMode(mode) {
     document.querySelector(`[data-mode=${mode}]`).classList.add('active');
     // change the background color to the color associated with the clicked mode
     document.body.style.backgroundColor = `var(--${mode})`;
+
+    // set the max attribute of the progress bar to the current timer modes total
+    document.getElementById('js-progress').setAttribute('max', timer.remainingTime.total);
 
     updateClock();
 }
@@ -118,6 +131,8 @@ function startTimer() {
                 default:
                     switchMode('pomodoro');
             }
+            // Reset the timers button to Start
+            stopTimer()
 
             // Uncommenting this would auto start the next sessions timer, but I prefer manually starting it
             // startTimer();
