@@ -13,6 +13,12 @@ const timer = {
     sessions: 0,
 }
 
+const buttonSound = new Audio('/src/assets/sounds/button-sound.mp3')
+const workStartSound = new Audio('/src/assets/sounds/workStart.mp3')
+const shortBreakSound = new Audio('/src/assets/sounds/shortBreakStart.mp3')
+const longBreakSound = new Audio('/src/assets/sounds/longBreakStart.mp3')
+
+
 // The 3 buttons: gomodoro, shortbreak, longbreak
 const modeButtons = document.querySelector('#js-mode-buttons')
 modeButtons.addEventListener('click', handleMode);
@@ -124,13 +130,19 @@ function startTimer() {
                     // Whenever we completed 4 pomodoro sessions we get a long break
                     if (timer.sessions % timer.longBreakInterval === 0) {
                         switchMode('longBreak');
+                        longBreakSound.play();
                     } else {
                         switchMode('shortBreak');
+                        shortBreakSound.play();
                     }
                     break;
                 default:
                     switchMode('pomodoro');
+                    workStartSound.play();
             }
+
+
+
             // Reset the timers button to Start
             stopTimer()
 
@@ -153,6 +165,7 @@ function stopTimer() {
 // Call the startTimer function once the start button is clicked
 const mainButton = document.getElementById('js-btn');
 mainButton.addEventListener('click', () => {
+    buttonSound.play();
     // extract the current action of the button clicked, can be start or stop
     const { action } = mainButton.dataset;
 
