@@ -1,11 +1,11 @@
-# README
+# A simple GUI Pomodoro application build with Wails + JS
 
-## About
+## Features
 
-This is the official Wails Vanilla template.
-
-You can configure the project by editing `wails.json`. More information about the project settings can be found
-here: https://wails.io/docs/reference/project-config
+- Pomodoro session (25min), short break(5min) and long break(15min)
+- Sound effects (only in dev)
+- Progress bar
+- Title shows the progress
 
 ## Live Development
 
@@ -16,4 +16,10 @@ to this in your browser, and you can call your Go code from devtools.
 
 ## Building
 
-To build a redistributable, production mode package, use `wails build`.
+To build your own application use `wails build`. Your build file will appear at build/bin/gomodoro.exe
+
+## Note
+
+Due to a bug it's currently not possible to play sounds with wails build. :(
+
+For more info see https://github.com/wailsapp/wails/issues/2090
