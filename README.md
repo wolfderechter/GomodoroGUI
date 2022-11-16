@@ -1,5 +1,8 @@
 # A simple GUI Pomodoro application build with Wails + JS
 
+![Gomodoro Application Image](./preview.png)
+
+
 ## Features
 
 - Pomodoro session (25min), short break(5min) and long break(15min)
