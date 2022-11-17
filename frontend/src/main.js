@@ -2,6 +2,16 @@ import './style.css';
 import './app.css';
 
 import { WindowSetTitle } from '../wailsjs/runtime/runtime';
+
+import buttonSoundSrc from '/src/assets/sounds/button-sound.mp3'
+const buttonSound = new Audio(buttonSoundSrc);
+import workStartSoundSrc from '/src/assets/sounds/workStart.mp3'
+const workStartSound = new Audio(workStartSoundSrc);
+import shortBreakSoundSrc from '/src/assets/sounds/shortBreakStart.mp3'
+const shortBreakSound = new Audio(shortBreakSoundSrc);
+import longBreakSoundSrc from '/src/assets/sounds/longBreakStart.mp3'
+const longBreakSound = new Audio(longBreakSoundSrc);
+
 // JS for the timer functionality
 const timer = {
     // A traditional pomodoro session is 25 minutes
@@ -13,10 +23,10 @@ const timer = {
     sessions: 0,
 }
 
-const buttonSound = new Audio('/src/assets/sounds/button-sound.mp3')
-const workStartSound = new Audio('/src/assets/sounds/workStart.mp3')
-const shortBreakSound = new Audio('/src/assets/sounds/shortBreakStart.mp3')
-const longBreakSound = new Audio('/src/assets/sounds/longBreakStart.mp3')
+// const buttonSound = new Audio('/src/assets/sounds/button-sound.mp3')
+// const workStartSound = new Audio('/src/assets/sounds/workStart.mp3')
+// const shortBreakSound = new Audio('/src/assets/sounds/shortBreakStart.mp3')
+// const longBreakSound = new Audio('/src/assets/sounds/longBreakStart.mp3')
 
 
 // The 3 buttons: gomodoro, shortbreak, longbreak
